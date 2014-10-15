@@ -28,6 +28,7 @@ type statistics struct {
   numbers []float64
   mean    float64
   median  float64
+  mode []float64
   stdDev float64
 }
 
@@ -79,8 +80,9 @@ func formatStats(stats statistics) string {
 <tr><td>Count</td><td>%d</td></tr>
 <tr><td>Mean</td><td>%f</td></tr>
 <tr><td>Median</td><td>%f</td></tr>
+<tr><td>Mode</td><td>%v</td></tr>
 <tr><td>Standard Deviation</td><td>%f</td></tr>
-</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.stdDev)
+</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.mode, stats.stdDev)
 }
 
 func getStats(numbers []float64) (stats statistics) {
@@ -88,6 +90,7 @@ func getStats(numbers []float64) (stats statistics) {
   sort.Float64s(stats.numbers)
   stats.mean = sum(numbers) / float64(len(numbers))
   stats.median = median(numbers)
+  stats.mode = mode(numbers)
   stats.stdDev = stdDev(numbers, stats.mean)
   return stats
 }
@@ -116,4 +119,31 @@ func stdDev(numbers []float64, mean float64) float64 {
   }
   sumOfDevs := sum(sqrdDevs)
   return math.Sqrt(sumOfDevs / (float64(len(numbers)) - 1))
+}
+
+func mode(numbers []float64) []float64 {
+  var tallies = make(map[float64]int)
+  for _, x := range numbers {
+    if _, ok := tallies[x]; ok {
+      tallies[x] += 1
+    } else {
+      tallies[x] = 1
+    }
+  }
+  var leaderCount int
+  for number := range tallies {
+    if tallies[number] > leaderCount {
+      leaderCount = tallies[number]
+    }
+  }
+  var leaders []float64
+  for number := range tallies {
+    if tallies[number] == leaderCount {
+      leaders = append(leaders, number)
+    }
+  }
+  if len(leaders) == len(numbers) {
+    leaders = leaders[:0]
+  }
+  return leaders
 }
