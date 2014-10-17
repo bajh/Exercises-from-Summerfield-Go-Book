@@ -2,7 +2,21 @@ package main
 
 import (
   "fmt"
+  "net/http"
   "math"
+  "log"
+  "strconv"
+)
+
+const (
+  pageTop = `<!DOCTYPE HTML><html><head><style>.error{color:#FF0000;}</style></head><title>Quadratic Equation Solver</title>
+    <body><h3>Please Enter a Quadratic Equation</h3>`
+  form = `<form action="/" method="POST">
+    <input type="text" name="a">x<sup>2</sup> + <input type="text" name="b">x + <input type="text" name="c">
+    <input type="submit" value="Solve">
+    </form>`
+    pageBottom = `</body></html>`
+    anError = `<p class="error">%s</p>`
 )
 
 type quadEq struct {
@@ -15,7 +29,50 @@ type quadEq struct {
 }
 
 func main() {
-  solveEq([]float64{1, 4, -21})
+  http.HandleFunc("/", homePage)
+  if err := http.ListenAndServe(":9001", nil); err != nil {
+    log.Fatal("failed to start server", err)
+  }
+}
+
+func homePage(writer http.ResponseWriter, request *http.Request) {
+  fmt.Fprint(writer, pageTop, form)
+  if request.Method == "POST" {
+    err := request.ParseForm()
+    if err != nil {
+      fmt.Fprintf(writer, anError, err)
+    } else {
+      if numbers, message, ok := processRequest(request); ok {
+        equation := solveEq(numbers)
+        fmt.Println(equation)
+        fmt.Fprint(writer, formatSolution(equation))
+      } else if message != "" {
+        fmt.Fprintf(writer, anError, message)
+      }
+    }
+  }
+  fmt.Fprint(writer, pageBottom)
+}
+
+func processRequest(request *http.Request) ([]float64, string, bool) {
+  var numbers []float64
+  for _, coefficient := range []string{"a", "b", "c"} {
+    if formVal, found := request.Form[coefficient]; found {
+      if formVal[0] == "" {
+        formVal[0] = "1"
+      }
+      if x, err := strconv.ParseFloat(formVal[0], 64); err != nil {
+        return numbers, "One or more fields are invalid", false
+      } else {
+        numbers = append(numbers, x)
+      }
+    }
+  }
+  return numbers, "", true
+}
+
+func formatSolution(equation quadEq) string {
+  return fmt.Sprintf(`<p>%fx<sup>2</sup> + %fx + %f -> x = %f or x = %f</p>`, equation.a, equation.b, equation.c, equation.solutions[0], equation.solutions[1])
 }
 
 func solveEq(numbers []float64) (equation quadEq) {
