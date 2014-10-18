@@ -83,20 +83,21 @@ func solveEq(numbers []float64) (equation quadEq) {
       equation.discriminant, equation.real = disc, ok
       equation.solutions = findRealSolutions(equation)
     } else {
-      fmt.Println("No real answers")
+      equation.solutions =findComplexSolutions(equation)
     }
     return equation
 }
 
 func findRealSolutions(equation quadEq) (solutions []float64) {
-  fmt.Println(equation.a)
-  fmt.Println(0 - equation.b)
-  fmt.Println(equation.discriminant)
   leftRoot := ((0 - equation.b) + math.Sqrt(equation.discriminant)) / (2 * equation.a)
     solutions = append(solutions, leftRoot)
   rightRoot := ((0 - equation.b) - math.Sqrt(equation.discriminant)) / (2 * equation.a)
   solutions = append(solutions, rightRoot)
   return solutions
+}
+
+func findComplexSolutions(equation quadEq) (solutions []float64]) {
+  
 }
 
 func discriminant(equation quadEq) (float64, bool) {
