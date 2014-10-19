@@ -9,7 +9,7 @@ import (
 )
 
 const (
-  pageTop = `<!DOCTYPE HTML><html><head><style>.error{color:#FF0000;}</style></head><title>Quadratic Equation Solver</title>
+  pageTop = `<!DOCTYPE HTML><html><head><style>.error{color:#FF0000;}</style><script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script></head><title>Quadratic Equation Solver</title>
     <body><h3>Please Enter a Quadratic Equation</h3>`
   form = `<form action="/" method="POST">
     <input type="text" name="a">x<sup>2</sup> + <input type="text" name="b">x + <input type="text" name="c">
@@ -44,7 +44,6 @@ func homePage(writer http.ResponseWriter, request *http.Request) {
     } else {
       if numbers, message, ok := processRequest(request); ok {
         equation := solveEq(numbers)
-        fmt.Println(equation)
         fmt.Fprint(writer, formatSolution(equation))
       } else if message != "" {
         fmt.Fprintf(writer, anError, message)
@@ -79,12 +78,13 @@ func solveEq(numbers []float64) (equation quadEq) {
   equation.a = numbers[0]
   equation.b = numbers[1]
   equation.c = numbers[2]
-  if disc, ok := discriminant(equation); ok {
-      equation.discriminant, equation.real = disc, ok
+  if disc, real := discriminant(equation); real {
+      equation.discriminant, equation.real = disc, real
       equation.solutions = findRealSolutions(equation)
-    } else {
-      equation.solutions =findComplexSolutions(equation)
-    }
+    } 
+    // else {
+    //   equation.solutions =findComplexSolutions(equation)
+    // }
     return equation
 }
 
@@ -96,9 +96,9 @@ func findRealSolutions(equation quadEq) (solutions []float64) {
   return solutions
 }
 
-func findComplexSolutions(equation quadEq) (solutions []float64]) {
-  
-}
+// func findComplexSolutions(equation quadEq) (solutions []float64]) {
+
+// }
 
 func discriminant(equation quadEq) (float64, bool) {
   if disc := (math.Pow(equation.b, 2) - (4 * equation.a * equation.c)); disc > 0 {
