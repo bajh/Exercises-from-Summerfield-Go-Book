@@ -20,7 +20,7 @@ type radical struct {
 func main() {
   var rad radical
   rad.val = 4500
-  rad.denominator = 5
+  rad.denominator = 1
   rad.multiplier = 1
   //Expected result is 6 * sqrt(5)/5
   fmt.Println(rad)
@@ -31,9 +31,7 @@ func (rad radical) String() string {
   //At the very least I should come back and make sure an exception is raised at this point if the radical has no val
   rad.factors, rad.prime, rad.perfect = findPrimeFactors(rad.val)
   rad.ExtractPerfectSquares()
-  fraction := rad.SimplifyFraction()
-  // return fraction
-  return fmt.Sprintf("<math mode='display'>%s<msqrt><mn>%d</mn></msqrt></mrow></math>", fraction, rad.radicand)
+  return rad.SimplifyFraction()
 }
 
 func findPrimeFactors(number int) (factors []int, prime bool, perfect bool) {
@@ -102,9 +100,9 @@ func (rad radical) SimplifyFraction() string {
   var wholeNum int
   if rad.denominator == 0 {
     finalDenom = 1
-    return fmt.Sprintf("<mi>%d</mi>", finalNum / finalDenom)
+    return fmt.Sprintf("<math mode='display'><mi>%d</mi><msqrt><mn>%d</mn></msqrt></math>", (finalNum / finalDenom), rad.radicand)
   } else if numerator % rad.denominator == 0 {
-    return fmt.Sprintf("<mi>%d</mi>", finalNum / finalDenom)
+    return fmt.Sprintf("<math mode='display'><mi>%d</mi><msqrt><mn>%d</mn></msqrt></math>", (finalNum / finalDenom), rad.radicand)
   } else if rad.denominator % numerator == 0 {
     finalNum = 1
     finalDenom = rad.denominator / numerator
@@ -131,8 +129,8 @@ func (rad radical) SimplifyFraction() string {
     }
   }
   if wholeNum > 0 {
-    return fmt.Sprintf("<mfrac><mn>%d</mn><mn>%d</mn><mn>%d</mn></mfrac>", wholeNum, finalNum, finalDenom)
+    return fmt.Sprintf("<math mode='display'><mi>%d</mi><mfrac><mrow><mn>%d</mn><msqrt><mn>%d</mn></msqrt></mrow><mrow><mn>%d</mn></mrow></mfrac></math>", wholeNum, finalNum, rad.radicand, finalDenom)
   } else {
-    return fmt.Sprintf("<mfrac><mi>%d</mi><mi>%d</mi></mfrac>", finalNum, finalDenom)
+    return fmt.Sprintf("<math mode='display'><mfrac><mi>%d</mi><mi>%d</mi></mfrac><msqrt><mn>%d</mn></msqrt></mrow></math>", finalNum, finalDenom, rad.radicand)
   }
 }
