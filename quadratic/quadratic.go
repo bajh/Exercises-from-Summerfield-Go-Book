@@ -96,10 +96,6 @@ func findRealSolutions(equation quadEq) (solutions []float64) {
   return solutions
 }
 
-// func findComplexSolutions(equation quadEq) (solutions []float64]) {
-
-// }
-
 func discriminant(equation quadEq) (float64, bool) {
   if disc := (math.Pow(equation.b, 2) - (4 * equation.a * equation.c)); disc > 0 {
     return disc, true
@@ -107,3 +103,5 @@ func discriminant(equation quadEq) (float64, bool) {
     return -1, false
   }
 }
+
+/*******************************/

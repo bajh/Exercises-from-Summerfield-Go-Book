@@ -3,7 +3,6 @@ package main
 import (
   "fmt"
   "math"
-  "strconv"
 )
 
 type radical struct {
@@ -33,8 +32,8 @@ func (rad radical) String() string {
   rad.factors, rad.prime, rad.perfect = findPrimeFactors(rad.val)
   rad.ExtractPerfectSquares()
   fraction := rad.SimplifyFraction()
-  fmt.Println("Here", fraction, rad.radicand)
-  return ""
+  // return fraction
+  return fmt.Sprintf("<math mode='display'>%s<msqrt><mn>%d</mn></msqrt></mrow></math>", fraction, rad.radicand)
 }
 
 func findPrimeFactors(number int) (factors []int, prime bool, perfect bool) {
@@ -81,7 +80,6 @@ func (rad *radical) ExtractPerfectSquares() {
     }
   }
   rad.coefficient = coefficient
-  fmt.Println(rad.coefficient)
   rad.radicand = radicand
 }
 
@@ -104,9 +102,9 @@ func (rad radical) SimplifyFraction() string {
   var wholeNum int
   if rad.denominator == 0 {
     finalDenom = 1
-    return strconv.Itoa(finalNum / finalDenom)
+    return fmt.Sprintf("<mi>%d</mi>", finalNum / finalDenom)
   } else if numerator % rad.denominator == 0 {
-    return strconv.Itoa(finalNum / finalDenom)
+    return fmt.Sprintf("<mi>%d</mi>", finalNum / finalDenom)
   } else if rad.denominator % numerator == 0 {
     finalNum = 1
     finalDenom = rad.denominator / numerator
