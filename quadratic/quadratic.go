@@ -63,9 +63,9 @@ func processRequest(request *http.Request) ([]int, string, bool) {
 
 func formatSolutions(equation quadEq, leftSolution string, rightSolution string) string {
   if leftSolution == rightSolution {
-    return fmt.Sprintf(`<p>%dx<sup>2</sup> + %dx + %d -> x = %s or x = %s</p>`, equation.a, equation.b, equation.c, leftSolution)
+    return "<p>" + strconv.Itoa(equation.a) + "x<sup>2</sup>" + strconv.Itoa(equation.b) + " x " + strconv.Itoa(equation.c) + " -> x = <math mode='display'>" + leftSolution + "</math></p>"
   } else {
-    return fmt.Sprintf(`<p>%dx<sup>2</sup> + %dx + %d -> x = %s or x = %s</p>`, equation.a, equation.b, equation.c, leftSolution, rightSolution)
+    return "<p>" + strconv.Itoa(equation.a) + "x<sup>2</sup>" + strconv.Itoa(equation.b) + " x " + strconv.Itoa(equation.c) + " -> x = <math mode='display'>" + leftSolution + "</math> and x = <math mode='display'>" + rightSolution + "</math></p>"
   }
 }
 
@@ -127,12 +127,12 @@ func (eq *quadEq) solve() (leftResult string, rightResult string) {
   } else {
     radical := simplifyRadical(eq.discriminant)
     if eq.b % denominator == 0 {
-      leftResult += "<mi>" + strconv.Itoa(-eq.b) +
+      leftResult += "<mi>" + strconv.Itoa(-eq.b / denominator) +
                     "</mi><mo>+</mo><mfrac><mrow><mn>" + strconv.Itoa(radical.coefficient) +
                     "</mn><msqrt><mn>" + strconv.Itoa(radical.radicand) + 
                     "</mn></msqrt></mrow><mrow><mn>" + strconv.Itoa(denominator) +
                     "</mn></mrow></mfrac>"
-      rightResult += "<mi>" + strconv.Itoa(-eq.b) +
+      rightResult += "<mi>" + strconv.Itoa(-eq.b / denominator) +
                     "</mi><mo>-</mo><mfrac><mrow><mn>" + strconv.Itoa(radical.coefficient) +
                     "</mn><msqrt><mn>" + strconv.Itoa(radical.radicand) + 
                     "</mn></msqrt></mrow><mrow><mn>" + strconv.Itoa(denominator) +
